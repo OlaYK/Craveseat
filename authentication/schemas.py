@@ -14,12 +14,12 @@ class UserCreate(UserBase):
     confirm_password: str
 
 class User(UserBase):
-    id: int
+    id: str
     class Config:
         from_attributes = True
 
 class UserOut(UserBase):
-    id: int
+    id: str
     is_active: bool
     class Config:
         from_attributes = True
