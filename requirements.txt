@@ -15,4 +15,8 @@ alembic==1.11.1
 
 pip install -r requirements.txt
 
+<<<<<<< HEAD
 # Use this command to install the packages listed in requirements.txt
+=======
+# Use this command to install the packages listed in requirements.txt
+>>>>>>> 39ab47e8249232df59e6088cd6d0fd44b7224e96
