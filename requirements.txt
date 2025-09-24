@@ -8,9 +8,12 @@ passlib[bcrypt]==1.7.5
 python-multipart==0.0.6
 cloudinary==1.33.0
 shortuuid==2.1.1
-pytest==7.4.2
+python-dotenv==1.0.1
 httpx==1.2.2
 alembic==1.11.1
+pytest==7.4.2
+graphviz==0.21
+ipython==8.24.0
 
 
 pip install -r requirements.txt
