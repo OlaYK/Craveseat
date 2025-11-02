@@ -1,7 +1,12 @@
-from sqlalchemy import Column, String, Boolean
+from sqlalchemy import Column, String, Boolean, Enum, TIMESTAMP, text
 from sqlalchemy.orm import relationship
 from database import Base
 import shortuuid
+from enum import Enum as PyENum
+
+class UserType(PyENum):
+    user = "user"
+    vendor = "vendor"
 
 class User(Base):
     __tablename__ = "users"
@@ -13,7 +18,13 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     disabled = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
-
-
+    user_type = Column(Enum(UserType), default=UserType.user, nullable=False)
+    server_default = text("now()")
+    created_at = Column(TIMESTAMP, server_default=text("now()"), nullable=False)
+    updated_at = Column(TIMESTAMP, server_default=text("now()"), onupdate=text("now()"))
+    
+    profile = relationship("UserProfile", back_populates="user", uselist=False)
+    vendor_profile = relationship("VendorProfile", back_populates="user", uselist=False)
+    
 
 

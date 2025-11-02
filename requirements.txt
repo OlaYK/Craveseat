@@ -11,7 +11,7 @@ shortuuid==2.1.1
 pytest==7.4.2
 httpx==1.2.2
 alembic==1.11.1
-
+bcrypt==4.0.1
 
 pip install -r requirements.txt
 

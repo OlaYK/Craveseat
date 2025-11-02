@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
+from .models import UserType    
 
 
 #user schemas
@@ -8,6 +9,7 @@ class UserBase(BaseModel):
     email: Optional[str] = None
     full_name: Optional[str] = None
     disabled: Optional[bool] = None
+    user_type:Optional[UserType] = UserType.user
 
 class UserCreate(UserBase):
     password: str
@@ -34,5 +36,6 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Optional[str] = None
+
 
 

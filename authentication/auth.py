@@ -1,31 +1,25 @@
 from datetime import datetime, timedelta
 from typing import Optional
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
-import schemas, models, crud
-from database import engine, SessionLocal, get_db
+from authentication import schemas, models, crud
+from database import get_db, engine, SessionLocal
+
+
+router = APIRouter()
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
 
 
 SECRET_KEY = "e5a50e37f6c8c6733b341610b468e5a5f53e164c12f4eac4069586a544497d1e" 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
@@ -67,7 +61,8 @@ async def get_current_active_user(current_user: models.User = Depends(get_curren
     return current_user
 
 
-@app.post("/signup", response_model=schemas.User)
+
+@router.post("/signup", response_model=schemas.User)
 def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if user.password != user.confirm_password:
         raise HTTPException(status_code=400, detail="Passwords do not match")
@@ -81,8 +76,9 @@ def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Email already registered")
 
     return crud.create_user(db=db, user=user)
+    
 
-@app.post("/token", response_model=schemas.Token)
+@router.post("/token", response_model=schemas.Token)
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
@@ -99,15 +95,15 @@ async def login_for_access_token(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.get("/users/me/", response_model=schemas.User)
+@router.get("/users/me/", response_model=schemas.User)
 async def read_users_me(current_user: models.User = Depends(get_current_active_user)):
     return current_user
 
-@app.get("/users/me/items")
+@router.get("/users/me/items")
 async def read_users_me_items(current_user: models.User = Depends(get_current_active_user)):
     return [{"item_id": id, "owner": current_user.username}]
 
-@app.get("/users/{user_id}", response_model=schemas.UserOut)
+@router.get("/users/{user_id}", response_model=schemas.UserOut)
 def read_user(user_id: str, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_active_user)):
     db_user = crud.get_user_by_id(db, user_id=user_id)
     if db_user is None:
@@ -115,7 +111,7 @@ def read_user(user_id: str, db: Session = Depends(get_db), current_user: models.
     return db_user
 
 #Change PW endpoint
-@app.put("/users/me/change-password")
+@router.put("/users/me/change-password")
 def change_password(
     old_password: str,
     new_password: str,
@@ -131,3 +127,4 @@ def change_password(
     db.commit()
     db.refresh(current_user)
     return {"msg": "Password updated successfully"}
+

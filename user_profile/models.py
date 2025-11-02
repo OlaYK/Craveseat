@@ -1,16 +1,17 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, func
 from sqlalchemy.orm import relationship
-from authentication.database import Base
+from database import Base, engine 
 from authentication.models import User
 
 class UserProfile(Base):
     __tablename__ = "user_profiles"
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
+    user_id = Column(String, ForeignKey("users.id"), primary_key= True, nullable=False)
     bio = Column(String, nullable=True)
     phone_number = Column(String, nullable=True)
     delivery_address = Column(String, nullable=True)
-    image_url = Column(String, nullable=True)  # Cloudinary URL
+    image_url = Column(String, nullable=True) 
+    updated_at = Column(DateTime(timezone=True),server_default=func.now(), onupdate=func.now(), nullable=False)    
 
     user = relationship("User", back_populates="profile")
+

@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel
 from typing import Optional
 
@@ -7,20 +6,19 @@ class UserProfileBase(BaseModel):
     bio: Optional[str] = None
     phone_number: Optional[str] = None
     delivery_address: Optional[str] = None
-    profile_image: Optional[str] = None  
+    
 
 
 class UserProfileCreate(UserProfileBase):
-    pass
-
+  pass 
 
 class UserProfileUpdate(UserProfileBase):
     pass
 
 
 class UserProfile(UserProfileBase):
-    id: int
-    user_id: int
+    user_id:str
+    image_url: Optional[str] = None
 
     class Config:
         from_attributes = True 
@@ -29,3 +27,9 @@ class UserProfile(UserProfileBase):
 class ChangePasswordRequest(BaseModel):
     old_password: str
     new_password: str
+
+class UserProfileUpdate(BaseModel):
+    bio: Optional[str] = None
+    phone_number: Optional[str] = None
+    delivery_address: Optional[str] = None
+    image_url: Optional[str] = None  

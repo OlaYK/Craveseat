@@ -2,7 +2,7 @@
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 
-from authentication.database import Base, engine, get_db
+from database import Base, engine, get_db
 from user_profile import crud, schemas
 
 from cloudinary_setup import upload_image

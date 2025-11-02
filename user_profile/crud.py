@@ -21,8 +21,7 @@ def create_profile(db: Session, profile: schemas.UserProfileCreate, user_id: int
         user_id=user_id,
         bio=profile.bio,
         phone_number=profile.phone_number,
-        delivery_address=profile.delivery_address,
-        profile_image=image_url,
+        delivery_address=profile.delivery_address
     )
     db.add(db_profile)
     db.commit()
@@ -30,20 +29,15 @@ def create_profile(db: Session, profile: schemas.UserProfileCreate, user_id: int
     return db_profile
 
 
-def update_profile(db: Session, user_id: int, bio=None, phone_number=None, delivery_address=None, image_url=None):
+def update_profile(db: Session, user_id: int, profile_update: schemas.UserProfileUpdate):
     profile = get_profile(db, user_id)
     if not profile:
-        profile = models.UserProfile(user_id=user_id)  
+        profile = models.UserProfile(user_id=user_id)
         db.add(profile)
 
-    if bio is not None:
-        profile.bio = bio
-    if phone_number is not None:
-        profile.phone_number = phone_number
-    if delivery_address is not None:
-        profile.delivery_address = delivery_address
-    if image_url is not None:
-        profile.profile_image = image_url
+    # Convert Pydantic model → dict
+    for field, value in profile_update.dict(exclude_unset=True).items():
+        setattr(profile, field, value)
 
     db.commit()
     db.refresh(profile)
