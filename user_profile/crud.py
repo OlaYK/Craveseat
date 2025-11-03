@@ -12,16 +12,17 @@ def get_password_hash(password: str):
     return pwd_context.hash(password)
 
 
-def get_profile(db: Session, user_id: int):
+def get_profile(db: Session, user_id: str):
     return db.query(models.UserProfile).filter(models.UserProfile.user_id == user_id).first()
 
 
-def create_profile(db: Session, profile: schemas.UserProfileCreate, user_id: int, image_url: str = None):
+def create_profile(db: Session, user_id: str, profile: schemas.UserProfileCreate, image_url: str = None):
     db_profile = models.UserProfile(
         user_id=user_id,
         bio=profile.bio,
         phone_number=profile.phone_number,
-        delivery_address=profile.delivery_address
+        delivery_address=profile.delivery_address,
+        image_url=image_url
     )
     db.add(db_profile)
     db.commit()
@@ -29,13 +30,13 @@ def create_profile(db: Session, profile: schemas.UserProfileCreate, user_id: int
     return db_profile
 
 
-def update_profile(db: Session, user_id: int, profile_update: schemas.UserProfileUpdate):
+def update_profile(db: Session, user_id: str, profile_update: schemas.UserProfileUpdate):
     profile = get_profile(db, user_id)
     if not profile:
         profile = models.UserProfile(user_id=user_id)
         db.add(profile)
 
-    # Convert Pydantic model → dict
+    # Update only fields that were provided
     for field, value in profile_update.dict(exclude_unset=True).items():
         setattr(profile, field, value)
 
@@ -44,9 +45,9 @@ def update_profile(db: Session, user_id: int, profile_update: schemas.UserProfil
     return profile
 
 
-
-def change_user_password(db: Session, user_id: int, old_password: str, new_password: str):
-    user = db.query(models.User).filter(models.User.id == user_id).first()
+def change_user_password(db: Session, user_id: str, old_password: str, new_password: str):
+    from authentication.models import User
+    user = db.query(User).filter(User.id == user_id).first()
     if not user:
         return False
 

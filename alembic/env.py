@@ -1,8 +1,6 @@
 from logging.config import fileConfig
-from database import Base
-from authentication import models
-from user_profile import models
 from dotenv import load_dotenv
+import os
 
 load_dotenv() 
 
@@ -10,6 +8,14 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+
+# Import Base and all models
+from database import Base
+from authentication.models import User, UserType
+from user_profile.models import UserProfile
+from vendor_profile.models import VendorProfile, ServiceCategory, VendorItem
+from cravings.models import Craving, CravingStatus, CravingCategory
+from responses.models import Response, ResponseStatus
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -22,8 +28,6 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

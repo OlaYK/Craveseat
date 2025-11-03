@@ -1,5 +1,4 @@
-# vendor_profile/schemas.py
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
@@ -36,7 +35,7 @@ class ServiceCategoryResponse(ServiceCategoryBase):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # ---------------- VENDOR ITEM ----------------
@@ -54,11 +53,12 @@ class VendorItemCreate(VendorItemBase):
 
 class VendorItemResponse(VendorItemBase):
     id: str
-    created_at: datetime
-    updated_at: datetime
+    vendor_id: str
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # ---------------- VENDOR PROFILE ----------------
@@ -67,9 +67,12 @@ class VendorProfileBase(BaseModel):
     service_category_id: Optional[int] = None
     vendor_address: Optional[str] = None
     vendor_phone: Optional[str] = None
-    vendor_email: Optional[EmailStr] = None
+    vendor_email: Optional[str] = None
     logo_url: Optional[str] = None
     banner_url: Optional[str] = None
+    item_images: Optional[List[str]] = []
+
+   
 
 
 class VendorProfileCreate(VendorProfileBase):
@@ -77,9 +80,17 @@ class VendorProfileCreate(VendorProfileBase):
 
 
 class VendorProfileUpdate(VendorProfileBase):
+    business_name: Optional[str] = None
+    service_category_id: Optional[int] = None
+    vendor_address: Optional[str] = None
+    vendor_phone: Optional[str] = None
+    vendor_email: Optional[str] = None
+    logo_url: Optional[str] = None
+    banner_url: Optional[str] = None
+    item_images: Optional[List[str]] = []
+    is_active: Optional[bool] = None
     status: Optional[VendorStatus] = None
     verification_status: Optional[VerificationStatus] = None
-
 
 class VendorProfileResponse(VendorProfileBase):
     vendor_id: str
@@ -87,10 +98,10 @@ class VendorProfileResponse(VendorProfileBase):
     is_verified: bool
     status: VendorStatus
     verification_status: VerificationStatus
-    created_at: datetime
-    updated_at: datetime
-    category: Optional[ServiceCategoryResponse]
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    category: Optional[ServiceCategoryResponse] = None
     items: List[VendorItemResponse] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True

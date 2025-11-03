@@ -1,12 +1,13 @@
-# vendor_profile/routes.py
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
 from authentication.auth import get_current_active_user
 from authentication import models as auth_models
+from authentication.models import UserType
 from database import get_db
 from vendor_profile import crud, schemas
+from cloudinary_setup import upload_image
 
-router = APIRouter(prefix="/vendor", tags=["Vendor Profile"])
+router = APIRouter()
 
 
 # ---------------- SERVICE CATEGORIES ----------------
@@ -22,7 +23,7 @@ def create_vendor_profile(
     db: Session = Depends(get_db),
     current_user: auth_models.User = Depends(get_current_active_user),
 ):
-    if current_user.user_type != "vendor":
+    if current_user.user_type != UserType.vendor:
         raise HTTPException(status_code=403, detail="Only vendors can create a vendor profile.")
 
     existing_profile = crud.get_vendor_profile(db, current_user.id)
@@ -37,7 +38,7 @@ def get_vendor_profile(
     db: Session = Depends(get_db),
     current_user: auth_models.User = Depends(get_current_active_user),
 ):
-    if current_user.user_type != "vendor":
+    if current_user.user_type != UserType.vendor:
         raise HTTPException(status_code=403, detail="Only vendors can access this route.")
 
     profile = crud.get_vendor_profile(db, current_user.id)
@@ -52,7 +53,7 @@ def update_vendor_profile(
     db: Session = Depends(get_db),
     current_user: auth_models.User = Depends(get_current_active_user),
 ):
-    if current_user.user_type != "vendor":
+    if current_user.user_type != UserType.vendor:
         raise HTTPException(status_code=403, detail="Only vendors can update their profile.")
 
     updated_profile = crud.update_vendor_profile(db, current_user.id, profile_update)
@@ -68,7 +69,7 @@ def add_item(
     db: Session = Depends(get_db),
     current_user: auth_models.User = Depends(get_current_active_user),
 ):
-    if current_user.user_type != "vendor":
+    if current_user.user_type != UserType.vendor:
         raise HTTPException(status_code=403, detail="Only vendors can add items.")
     return crud.add_vendor_item(db, current_user.id, item)
 
@@ -78,7 +79,7 @@ def list_vendor_items(
     db: Session = Depends(get_db),
     current_user: auth_models.User = Depends(get_current_active_user),
 ):
-    if current_user.user_type != "vendor":
+    if current_user.user_type != UserType.vendor:
         raise HTTPException(status_code=403, detail="Only vendors can view their items.")
     return crud.get_vendor_items(db, current_user.id)
 
@@ -89,9 +90,10 @@ def delete_vendor_item(
     db: Session = Depends(get_db),
     current_user: auth_models.User = Depends(get_current_active_user),
 ):
-    if current_user.user_type != "vendor":
+    if current_user.user_type != UserType.vendor:
         raise HTTPException(status_code=403, detail="Only vendors can delete their items.")
+    
     success = crud.delete_vendor_item(db, item_id)
     if not success:
         raise HTTPException(status_code=404, detail="Item not found.")
-    return
+    return None
