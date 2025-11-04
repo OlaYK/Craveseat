@@ -16,6 +16,7 @@ from user_profile.models import UserProfile
 from vendor_profile.models import VendorProfile, ServiceCategory, VendorItem
 from cravings.models import Craving, CravingStatus, CravingCategory
 from responses.models import Response, ResponseStatus
+from notifications.models import Notification, NotificationType
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

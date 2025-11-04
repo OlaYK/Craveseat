@@ -70,9 +70,6 @@ class VendorProfileBase(BaseModel):
     vendor_email: Optional[str] = None
     logo_url: Optional[str] = None
     banner_url: Optional[str] = None
-    item_images: Optional[List[str]] = []
-
-   
 
 
 class VendorProfileCreate(VendorProfileBase):
@@ -80,17 +77,9 @@ class VendorProfileCreate(VendorProfileBase):
 
 
 class VendorProfileUpdate(VendorProfileBase):
-    business_name: Optional[str] = None
-    service_category_id: Optional[int] = None
-    vendor_address: Optional[str] = None
-    vendor_phone: Optional[str] = None
-    vendor_email: Optional[str] = None
-    logo_url: Optional[str] = None
-    banner_url: Optional[str] = None
-    item_images: Optional[List[str]] = []
-    is_active: Optional[bool] = None
     status: Optional[VendorStatus] = None
     verification_status: Optional[VerificationStatus] = None
+
 
 class VendorProfileResponse(VendorProfileBase):
     vendor_id: str

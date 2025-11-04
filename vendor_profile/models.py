@@ -9,7 +9,6 @@ from sqlalchemy import (
     Numeric,
     Boolean,
     Enum as SAEnum,
-    ARRAY,
     func,
 )
 from sqlalchemy.orm import relationship
@@ -52,7 +51,7 @@ class ServiceCategory(Base):
 
 # --- Vendor profile (1-to-1 with user) ---
 class VendorProfile(Base):
-    __tablename__ = "vendor_profile"
+    __tablename__ = "vendor_profiles"  # Fixed: was "vendor_profile"
 
     vendor_id = Column(String, ForeignKey("users.id"), primary_key=True, nullable=False, index=True)
 
@@ -65,11 +64,9 @@ class VendorProfile(Base):
 
     logo_url = Column(String, nullable=True)
     banner_url = Column(String, nullable=True)
-    item_images = Column(ARRAY(String), nullable=True)
 
     rating = Column(Numeric(3, 2), nullable=True, default=0.0)
     is_verified = Column(Boolean, default=False)
-    is_active = Column(Boolean, default=True)
 
     status = Column(SAEnum(VendorStatus), default=VendorStatus.active, nullable=False)
     verification_status = Column(SAEnum(VerificationStatus), default=VerificationStatus.pending, nullable=False)
@@ -88,7 +85,7 @@ class VendorItem(Base):
     __tablename__ = "vendor_items"
 
     id = Column(String, primary_key=True, default=shortuuid.uuid, index=True)
-    vendor_id = Column(String, ForeignKey("vendor_profile.vendor_id"), nullable=False, index=True)
+    vendor_id = Column(String, ForeignKey("vendor_profiles.vendor_id"), nullable=False, index=True)
 
     item_name = Column(String(200), nullable=False)
     item_description = Column(Text, nullable=True)

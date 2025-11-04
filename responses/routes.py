@@ -17,7 +17,7 @@ def create_response(
     db: Session = Depends(get_db),
     current_user: auth_models.User = Depends(get_current_active_user),
 ):
-    """Create a response to a craving"""
+    """Create a response to a craving (authenticated user, optionally anonymous)"""
     # Check if craving exists
     db_craving = cravings_crud.get_craving(db, craving_id)
     if not db_craving:
@@ -31,7 +31,21 @@ def create_response(
     if db_craving.status != "open":
         raise HTTPException(status_code=400, detail="Craving is no longer accepting responses")
     
-    return crud.create_response(db, craving_id, current_user.id, response)
+    # Create response (user_id is provided but can be hidden if is_anonymous=True)
+    db_response = crud.create_response(db, craving_id, response, current_user.id)
+    
+    # Create notification
+    from notifications import crud as notifications_crud
+    responder_name = response.anonymous_name if response.is_anonymous else current_user.username
+    notifications_crud.notify_craving_response(
+        db=db,
+        craving_owner_id=db_craving.user_id,
+        craving_id=craving_id,
+        response_id=db_response.id,
+        responder_name=responder_name
+    )
+    
+    return db_response
 
 
 @router.get("/craving/{craving_id}", response_model=List[schemas.ResponseOut])

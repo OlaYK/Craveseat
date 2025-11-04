@@ -16,8 +16,34 @@ async def create_craving(
     db: Session = Depends(get_db),
     current_user: auth_models.User = Depends(get_current_active_user),
 ):
-    """Create a new craving"""
-    return crud.create_craving(db, current_user.id, craving)
+    """Create a new craving with auto-generated share token"""
+    db_craving = crud.create_craving(db, current_user.id, craving)
+    return db_craving
+
+
+@router.get("/{craving_id}/share-url")
+def get_share_url(
+    craving_id: str,
+    db: Session = Depends(get_db),
+    current_user: auth_models.User = Depends(get_current_active_user),
+):
+    """Get shareable URL for a craving"""
+    db_craving = crud.get_craving(db, craving_id)
+    if not db_craving:
+        raise HTTPException(status_code=404, detail="Craving not found")
+    
+    if db_craving.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to share this craving")
+    
+    # Generate full share URL (you can customize the domain)
+    base_url = "https://craveseat.com/share"  # Replace with your actual domain
+    share_url = f"{base_url}/{db_craving.share_token}"
+    
+    return {
+        "share_token": db_craving.share_token,
+        "share_url": share_url,
+        "message": "Share this link with anyone to let them view and respond to your craving!"
+    }
 
 
 @router.post("/{craving_id}/upload-image", response_model=schemas.CravingResponse)

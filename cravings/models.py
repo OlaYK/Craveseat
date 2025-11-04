@@ -39,7 +39,7 @@ class Craving(Base):
     
     recommended_vendor = Column(String, nullable=True)
     vendor_contact = Column(String, nullable=True)
-    share_url = Column(String, nullable=True)
+    share_token = Column(String, unique=True, nullable=False, default=shortuuid.uuid, index=True)  # For share URLs
     notes = Column(Text, nullable=True)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

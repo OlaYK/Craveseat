@@ -2,11 +2,20 @@ from sqlalchemy.orm import Session
 from responses import models, schemas
 
 
-def create_response(db: Session, craving_id: str, user_id: str, response: schemas.ResponseCreate):
+def create_response(
+    db: Session, 
+    craving_id: str, 
+    response: schemas.ResponseCreate,
+    user_id: str = None  # Now optional
+):
+    """Create a response (authenticated or anonymous)"""
     db_response = models.Response(
         craving_id=craving_id,
-        user_id=user_id,
-        message=response.message
+        user_id=user_id,  # Will be None for anonymous
+        message=response.message,
+        is_anonymous=response.is_anonymous,
+        anonymous_name=response.anonymous_name,
+        anonymous_contact=response.anonymous_contact
     )
     db.add(db_response)
     db.commit()

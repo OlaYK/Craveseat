@@ -54,7 +54,7 @@ class CravingResponse(CravingBase):
     user_id: str
     status: CravingStatus
     image_url: Optional[str] = None
-    share_url: Optional[str] = None
+    share_token: str  # Token for sharing
     created_at: datetime
     updated_at: datetime
     fulfilled_at: Optional[datetime] = None

@@ -16,7 +16,10 @@ class ResponseBase(BaseModel):
 
 
 class ResponseCreate(ResponseBase):
-    pass
+    # For anonymous responses
+    is_anonymous: Optional[bool] = False
+    anonymous_name: Optional[str] = None
+    anonymous_contact: Optional[str] = None
 
 
 class ResponseUpdate(BaseModel):
@@ -27,8 +30,10 @@ class ResponseUpdate(BaseModel):
 class ResponseOut(ResponseBase):
     id: str
     craving_id: str
-    user_id: str
+    user_id: Optional[str] = None  # None if anonymous
     status: ResponseStatus
+    is_anonymous: bool
+    anonymous_name: Optional[str] = None
     created_at: datetime
 
     class Config:
@@ -38,9 +43,11 @@ class ResponseOut(ResponseBase):
 # For nested display in cravings
 class ResponseInCraving(BaseModel):
     id: str
-    user_id: str
+    user_id: Optional[str] = None  # None if anonymous
     message: str
     status: ResponseStatus
+    is_anonymous: bool
+    anonymous_name: Optional[str] = None
     created_at: datetime
 
     class Config:
